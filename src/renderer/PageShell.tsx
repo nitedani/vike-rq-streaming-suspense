@@ -1,6 +1,6 @@
 import { PageContextProvider } from "#root/src/hooks/usePageContext.js";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ReactQueryStreamedHydration } from "./ReactQueryStreamedHydration.js";
 import type { PageContext } from "./types.js";
 
