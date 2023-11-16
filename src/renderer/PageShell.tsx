@@ -13,11 +13,6 @@ export function PageShell({
   pageContext: PageContext;
   queryClient: QueryClient;
 }) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <React.StrictMode>
