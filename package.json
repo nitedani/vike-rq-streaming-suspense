@@ -1,0 +1,28 @@
+{
+  "name": "vike-rq-streaming",
+  "type": "module",
+  "scripts": {
+    "dev": "PORT=3000 vite",
+    "build": "vite build && vite build --ssr",
+    "start": "NODE_ENV=production PORT=3000 node dist/server/index.mjs"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.2.0",
+    "prettier": "^3.1.0",
+    "telefunc": "^0.1.64",
+    "vavite": "^3.0.0",
+    "vike": "^0.4.146",
+    "vite": "^4.0.0"
+  },
+  "dependencies": {
+    "@brillout/json-serializer": "^0.5.8",
+    "@tanstack/react-query": "^5.8.4",
+    "express": "^4.18.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-streaming": "^0.3.16"
+  }
+}
