@@ -42,7 +42,7 @@ export async function render(pageContext: PageContextServer) {
   }
   return {
     documentHtml: escapeInject`<!DOCTYPE html>
-    <html lang="hu" translate="no">
+    <html>
       <head>
         <meta name="color-scheme" content="dark light" />
         <meta name="description" content="App" />
