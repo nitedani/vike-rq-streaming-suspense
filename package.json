@@ -1,6 +1,8 @@
 {
   "name": "vike-rq-streaming",
   "type": "module",
+  "version": "0.0.1",
+  "private": true,
   "scripts": {
     "dev": "PORT=3000 vite",
     "build": "vite build && vite build --ssr",
@@ -13,6 +15,7 @@
     "@vitejs/plugin-react": "^4.2.0",
     "prettier": "^3.1.0",
     "telefunc": "^0.1.64",
+    "typescript": "^5.2.2",
     "vavite": "^3.0.0",
     "vike": "^0.4.146",
     "vite": "^4.0.0"
