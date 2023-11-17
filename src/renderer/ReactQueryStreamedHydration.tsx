@@ -13,8 +13,8 @@ declare global {
 
 /**
  * This component is responsible for:
- * - hydrating the query client on the client
  * - dehydrating the query client on the server
+ * - hydrating the query client on the client
  */
 export function ReactQueryStreamedHydration(props: {
   children: ReactNode;
