@@ -58,7 +58,7 @@ export function ReactQueryStreamedHydration(props: {
   }
 
   const initialized = useRef(false);
-  if (!stream && typeof window !== "undefined" && !initialized.current) {
+  if (!stream && !initialized.current) {
     initialized.current = true;
     document.getElementById(preambleId)?.remove();
     for (const entry of window._rqd_) {
