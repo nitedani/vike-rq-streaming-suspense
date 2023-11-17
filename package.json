@@ -24,8 +24,8 @@
     "@brillout/json-serializer": "^0.5.8",
     "@tanstack/react-query": "^5.8.4",
     "express": "^4.18.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "canary",
+    "react-dom": "canary",
     "react-streaming": "^0.3.16"
   }
 }
