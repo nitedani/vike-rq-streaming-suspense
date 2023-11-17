@@ -1,12 +1,17 @@
 import type { QueryClient } from "@tanstack/react-query";
-import { dehydrate, hydrate, useQueryClient } from "@tanstack/react-query";
+import {
+  dehydrate,
+  hydrate,
+  useQueryClient,
+  DehydratedState,
+} from "@tanstack/react-query";
 import { uneval } from "devalue";
 import type { ReactNode } from "react";
 import { useStream } from "react-streaming";
 
 declare global {
   interface Window {
-    _rqd_?: string[];
+    _rqd_?: { push: (entry: DehydratedState) => void } | string[];
     _rqc_?: () => void;
   }
 }
@@ -45,12 +50,16 @@ export function ReactQueryStreamedHydration(props: {
     });
   }
 
-  if (!import.meta.env.SSR && window._rqd_) {
-    for (const entry of window._rqd_) {
+  if (!import.meta.env.SSR && Array.isArray(window._rqd_)) {
+    const onEntry = (entry: DehydratedState) => {
       hydrate(queryClient, entry);
+    };
+
+    for (const entry of window._rqd_) {
+      onEntry(entry);
     }
-    delete window._rqd_;
-    delete window._rqc_;
+
+    window._rqd_ = { push: onEntry };
   }
   return props.children;
 }
