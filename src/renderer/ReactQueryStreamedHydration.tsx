@@ -23,7 +23,7 @@ export function ReactQueryStreamedHydration(props: {
   const stream = useStream();
   const queryClient = useQueryClient(props.queryClient);
 
-  if (stream) {
+  if (import.meta.env.SSR && stream) {
     stream.injectToStream(
       `<script class="_rqc_">window._rqd_=[];window._rqc_=(c)=>{Array.from(
         window.document.getElementsByClassName(c)
@@ -45,7 +45,7 @@ export function ReactQueryStreamedHydration(props: {
     });
   }
 
-  if (!stream && window._rqd_) {
+  if (!import.meta.env.SSR && window._rqd_) {
     for (const entry of window._rqd_) {
       hydrate(queryClient, entry);
     }
