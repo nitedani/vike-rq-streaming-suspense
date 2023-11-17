@@ -23,13 +23,10 @@ export function ReactQueryStreamedHydration(props: {
   const stream = useStream();
   const queryClient = useQueryClient(props.queryClient);
 
-  const preambleId = "_rqc_";
-  const dataClassName = "_rqd_";
-
   if (stream) {
     stream.injectToStream(
-      `<script id="${preambleId}">window._rqd_=[];window._rqc_=()=>{Array.from(
-        window.document.getElementsByClassName("${dataClassName}")
+      `<script id="_rqc_">window._rqd_=[];window._rqc_=()=>{Array.from(
+        window.document.getElementsByClassName("_rqd_")
       ).forEach((e) => e.remove())}</script>`
     );
     queryClient.getQueryCache().subscribe((event) => {
@@ -40,7 +37,7 @@ export function ReactQueryStreamedHydration(props: {
             return;
           }
           stream.injectToStream(
-            `<script class="${dataClassName}">window._rqd_.push(${uneval(
+            `<script class="_rqd_">window._rqd_.push(${uneval(
               dehydrate(queryClient, {
                 shouldDehydrateQuery: (query) =>
                   query.queryHash === event.query.queryHash,
@@ -53,7 +50,7 @@ export function ReactQueryStreamedHydration(props: {
   }
 
   if (!stream && window._rqd_) {
-    document.getElementById(preambleId)?.remove();
+    document.getElementById("_rqc_")?.remove();
     for (const entry of window._rqd_) {
       hydrate(queryClient, entry);
     }
