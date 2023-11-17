@@ -25,9 +25,9 @@ export function ReactQueryStreamedHydration(props: {
 
   if (import.meta.env.SSR && stream) {
     stream.injectToStream(
-      `<script class="_rqd_">window._rqd_=[];window._rqc_=()=>{Array.from(
-        window.document.getElementsByClassName("_rqd_")
-      ).forEach((e) => e.remove())};window._rqc_()</script>`
+      `<script class="_rqd_">_rqd_=[];_rqc_=()=>{Array.from(
+        document.getElementsByClassName("_rqd_")
+      ).forEach((e) => e.remove())};_rqc_()</script>`
     );
     queryClient.getQueryCache().subscribe((event) => {
       if (
@@ -35,12 +35,12 @@ export function ReactQueryStreamedHydration(props: {
         event.query.state.status === "success"
       )
         stream.injectToStream(
-          `<script class="_rqd_">window._rqd_.push(${uneval(
+          `<script class="_rqd_">_rqd_.push(${uneval(
             dehydrate(queryClient, {
               shouldDehydrateQuery: (query) =>
                 query.queryHash === event.query.queryHash,
             })
-          )});window._rqc_()</script>`
+          )});_rqc_()</script>`
         );
     });
   }
