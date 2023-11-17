@@ -1,17 +1,13 @@
-"use client";
 import type { QueryClient } from "@tanstack/react-query";
 import { dehydrate, hydrate, useQueryClient } from "@tanstack/react-query";
-import { useRef, type ReactNode } from "react";
-import { useStream } from "react-streaming";
 import { uneval } from "devalue";
-
-const preambleId = "_rqc_";
-const dataClassName = "_rqd_";
+import type { ReactNode } from "react";
+import { useStream } from "react-streaming";
 
 declare global {
   interface Window {
-    _rqd_: string[];
-    _rqc_: () => void;
+    _rqd_?: string[];
+    _rqc_?: () => void;
   }
 }
 
@@ -26,6 +22,9 @@ export function ReactQueryStreamedHydration(props: {
 }) {
   const stream = useStream();
   const queryClient = useQueryClient(props.queryClient);
+
+  const preambleId = "_rqc_";
+  const dataClassName = "_rqd_";
 
   if (stream) {
     stream.injectToStream(
@@ -53,13 +52,13 @@ export function ReactQueryStreamedHydration(props: {
     });
   }
 
-  const initialized = useRef(false);
-  if (!stream && !initialized.current) {
-    initialized.current = true;
+  if (!stream && window._rqd_) {
     document.getElementById(preambleId)?.remove();
     for (const entry of window._rqd_) {
       hydrate(queryClient, entry);
     }
+    delete window._rqd_;
+    delete window._rqc_;
   }
   return props.children;
 }
