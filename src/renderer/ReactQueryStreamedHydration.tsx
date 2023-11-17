@@ -10,7 +10,7 @@ const dataClassName = "_rqd_";
 
 declare global {
   interface Window {
-    _rqs_: string[];
+    _rqd_: string[];
     _rqc_: () => void;
   }
 }
@@ -29,7 +29,7 @@ export function ReactQueryStreamedHydration(props: {
 
   if (stream) {
     stream.injectToStream(
-      `<script id="${preambleId}">window._rqs_=[];window._rqc_=()=>{Array.from(
+      `<script id="${preambleId}">window._rqd_=[];window._rqc_=()=>{Array.from(
         window.document.getElementsByClassName("${dataClassName}")
       ).forEach((e) => e.remove())}</script>`
     );
@@ -42,7 +42,7 @@ export function ReactQueryStreamedHydration(props: {
           }
           const htmlChunk = `
 <script class="${dataClassName}">
-    window._rqs_.push(${uneval(
+    window._rqd_.push(${uneval(
       dehydrate(queryClient, {
         shouldDehydrateQuery(query) {
           return query.queryHash === event.query.queryHash;
@@ -61,7 +61,7 @@ export function ReactQueryStreamedHydration(props: {
   if (!stream && typeof window !== "undefined" && !initialized.current) {
     initialized.current = true;
     document.getElementById(preambleId)?.remove();
-    for (const entry of window._rqs_) {
+    for (const entry of window._rqd_) {
       hydrate(queryClient, entry);
     }
   }
