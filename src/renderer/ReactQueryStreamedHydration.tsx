@@ -40,17 +40,14 @@ export function ReactQueryStreamedHydration(props: {
           if (event.query.state.status !== "success") {
             return;
           }
-          const htmlChunk = `
-<script class="${dataClassName}">
-    window._rqd_.push(${uneval(
-      dehydrate(queryClient, {
-        shouldDehydrateQuery: (query) =>
-          query.queryHash === event.query.queryHash,
-      })
-    )})
-    window._rqc_()
-</script>`;
-          stream.injectToStream(htmlChunk);
+          stream.injectToStream(
+            `<script class="${dataClassName}">window._rqd_.push(${uneval(
+              dehydrate(queryClient, {
+                shouldDehydrateQuery: (query) =>
+                  query.queryHash === event.query.queryHash,
+              })
+            )});window._rqc_()</script>`
+          );
         }
       }
     });
