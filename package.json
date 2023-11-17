@@ -21,8 +21,8 @@
     "vite": "^5.0.0"
   },
   "dependencies": {
-    "@brillout/json-serializer": "^0.5.8",
     "@tanstack/react-query": "^5.8.4",
+    "devalue": "^4.3.2",
     "express": "^4.18.2",
     "react": "canary",
     "react-dom": "canary",

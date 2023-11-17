@@ -13,7 +13,6 @@ export function PageShell({
   pageContext: PageContext;
   queryClient: QueryClient;
 }) {
-
   return (
     <React.StrictMode>
       <PageContextProvider pageContext={pageContext}>

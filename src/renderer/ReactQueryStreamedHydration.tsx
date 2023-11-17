@@ -1,17 +1,17 @@
 "use client";
-import { parse } from "@brillout/json-serializer/parse";
-import { stringify } from "@brillout/json-serializer/stringify";
-import type { DehydratedState, QueryClient } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
 import { dehydrate, hydrate, useQueryClient } from "@tanstack/react-query";
 import { useRef, type ReactNode } from "react";
 import { useStream } from "react-streaming";
+import { uneval } from "devalue";
 
-const className = "rq-ssr-data";
-const triggerClassName = "rq-entry-received";
+const preambleId = "_rqc_";
+const dataClassName = "_rqd_";
 
 declare global {
   interface Window {
-    _rq_entry_received_: () => void;
+    _rqs_: string[];
+    _rqc_: () => void;
   }
 }
 
@@ -25,70 +25,44 @@ export function ReactQueryStreamedHydration(props: {
   queryClient?: QueryClient;
 }) {
   const stream = useStream();
-  const queryClient = useQueryClient(props.queryClient) as QueryClient & {
-    __ssr_entries: Set<string>;
-  };
+  const queryClient = useQueryClient(props.queryClient);
 
-  // <server only>
   if (stream) {
+    stream.injectToStream(
+      `<script id="${preambleId}">window._rqs_=[];window._rqc_=()=>{Array.from(
+        window.document.getElementsByClassName("${dataClassName}")
+      ).forEach((e) => e.remove())}</script>`
+    );
     queryClient.getQueryCache().subscribe((event) => {
       switch (event.type) {
         case "added":
         case "updated": {
-          const data = event.query.state.data;
-          if (data === undefined) {
+          if (event.query.state.status !== "success") {
             return;
           }
-          // avoid sending the same key multiple times
-          const key = event.query.queryHash;
-          queryClient.__ssr_entries ??= new Set<string>();
-          if (!queryClient.__ssr_entries.has(key)) {
-            queryClient.__ssr_entries.add(key);
-            const htmlChunk = `
-<script class="${className}" type="application/json">
-    ${stringify(
+          const htmlChunk = `
+<script class="${dataClassName}">
+    window._rqs_.push(${uneval(
       dehydrate(queryClient, {
         shouldDehydrateQuery(query) {
           return query.queryHash === event.query.queryHash;
         },
-      }),
-    )}
-</script>
-<script class="rq-chunk-received">
-    if (window._rq_entry_received_) window._rq_entry_received_()
+      })
+    )})
+    window._rqc_()
 </script>`;
-            stream.injectToStream(htmlChunk);
-          }
+          stream.injectToStream(htmlChunk);
         }
       }
     });
   }
-  // </server only>
 
   const initialized = useRef(false);
-  if (!stream && typeof window !== "undefined") {
-    window._rq_entry_received_ = () => {
-      const triggerEls = Array.from(
-        window.document.querySelectorAll(`.${triggerClassName}`),
-      );
-      for (const el of triggerEls) {
-        el.remove();
-      }
-
-      const els = Array.from(window.document.querySelectorAll(`.${className}`));
-      for (const el of els) {
-        const textContent = el.textContent;
-        el.remove();
-        if (!textContent) {
-          throw new Error("No text content");
-        }
-        const dehydratedState = parse(textContent) as DehydratedState;
-        hydrate(queryClient, dehydratedState);
-      }
-    };
-    if (!initialized.current) {
-      initialized.current = true;
-      window._rq_entry_received_();
+  if (!stream && typeof window !== "undefined" && !initialized.current) {
+    initialized.current = true;
+    document.getElementById(preambleId)?.remove();
+    for (const entry of window._rqs_) {
+      hydrate(queryClient, entry);
     }
   }
   return props.children;
