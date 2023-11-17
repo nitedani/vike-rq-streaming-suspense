@@ -30,22 +30,18 @@ export function ReactQueryStreamedHydration(props: {
       ).forEach((e) => e.remove())}</script>`
     );
     queryClient.getQueryCache().subscribe((event) => {
-      switch (event.type) {
-        case "added":
-        case "updated": {
-          if (event.query.state.status !== "success") {
-            return;
-          }
-          stream.injectToStream(
-            `<script class="_rqd_">window._rqd_.push(${uneval(
-              dehydrate(queryClient, {
-                shouldDehydrateQuery: (query) =>
-                  query.queryHash === event.query.queryHash,
-              })
-            )});window._rqc_()</script>`
-          );
-        }
-      }
+      if (
+        ["added", "updated"].includes(event.type) &&
+        event.query.state.status === "success"
+      )
+        stream.injectToStream(
+          `<script class="_rqd_">window._rqd_.push(${uneval(
+            dehydrate(queryClient, {
+              shouldDehydrateQuery: (query) =>
+                query.queryHash === event.query.queryHash,
+            })
+          )});window._rqc_()</script>`
+        );
     });
   }
 
