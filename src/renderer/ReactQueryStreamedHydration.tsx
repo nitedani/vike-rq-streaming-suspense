@@ -44,9 +44,8 @@ export function ReactQueryStreamedHydration(props: {
 <script class="${dataClassName}">
     window._rqd_.push(${uneval(
       dehydrate(queryClient, {
-        shouldDehydrateQuery(query) {
-          return query.queryHash === event.query.queryHash;
-        },
+        shouldDehydrateQuery: (query) =>
+          query.queryHash === event.query.queryHash,
       })
     )})
     window._rqc_()
